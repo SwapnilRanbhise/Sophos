@@ -1,0 +1,65 @@
+Sophos Quick Change ISP Checklist
+1️⃣ Plug & Identify
+WAN cable from new ISP → into the same WAN port on Sophos that the old ISP used (or note the new port if it’s different).
+
+In Web Admin → Network → Interfaces, find the interface that shows Disconnected for the old ISP.
+
+2️⃣ Edit WAN Interface
+Go to: Network → Interfaces → Edit WAN port
+
+IP Assignment: Select what your ISP uses:
+
+DHCP — Most ISPs (auto IP from ISP modem/router)
+
+Static — Enter IP, Subnet, Gateway given by ISP
+
+PPPoE — Enter username/password from ISP
+
+Gateway: Make sure the correct gateway IP is filled.
+
+Save.
+
+3️⃣ Set as Default Gateway
+Go to: Routing → Gateways
+
+Ensure the new WAN gateway is:
+
+Status: Green/Active
+
+Default Gateway: ✅ Checked
+
+Disable the old WAN gateway.
+
+4️⃣ NAT Rule Check
+Go to: Rules & Policies → NAT Rules
+
+Find your LAN → WAN masquerade rule.
+
+Under Outgoing Interface, replace the old WAN interface with your new WAN interface.
+
+Save.
+
+5️⃣ DNS Settings
+Go to: Network → DNS
+
+Add:
+
+Copy
+Edit
+8.8.8.8
+1.1.1.1
+(or your ISP DNS if provided)
+
+Save.
+
+6️⃣ Test from Sophos
+Go to: Diagnostics → Tools
+
+Ping 8.8.8.8 from the new WAN interface → should succeed.
+
+Ping google.com → if this works, DNS is fine.
+
+7️⃣ LAN Side
+No change needed — your LAN stays 192.168.0.x.
+
+All devices should still get IPs in that range from Sophos.
