@@ -62,4 +62,120 @@ Ping google.com → if this works, DNS is fine.
 7️⃣ LAN Side
 No change needed — your LAN stays 192.168.0.x.
 
+
+
+
+
+
+
+
+
+Sophos Firewall Quick Restore – WAN & LAN
+1️⃣ WAN (New ISP) Setup
+Web Admin → Network → Interfaces
+
+Find the WAN port you plugged the ISP cable into.
+
+Click Edit → set IP Assignment:
+
+DHCP → if ISP modem/router gives IP automatically.
+
+Static → enter Public IP, Subnet Mask, and Gateway from ISP.
+
+PPPoE → enter username/password from ISP.
+
+Save.
+
+2️⃣ Set as Default Gateway
+Routing → Gateways
+
+Make sure new WAN gateway is Active and Default Gateway checked.
+
+Disable old ISP gateway.
+
+3️⃣ LAN Reset (192.168.0.x Range)
+Network → Interfaces
+
+Find the LAN port (usually Port1 or Port2).
+
+Click Edit and set:
+
+yaml
+Copy
+Edit
+IP Address: 192.168.0.1
+Subnet Mask: 255.255.255.0
+Zone: LAN
+Save.
+
+4️⃣ DHCP (if Sophos gives LAN IPs)
+Network → DHCP
+
+If no server exists for LAN, click Add:
+
+nginx
+Copy
+Edit
+Start IP: 192.168.0.10
+End IP:   192.168.0.254
+Gateway: 192.168.0.1
+DNS: 8.8.8.8, 1.1.1.1
+Interface: LAN
+Enable it.
+(If a Windows Server handles DHCP, skip this step.)
+
+5️⃣ NAT Rule Check
+Rules & Policies → NAT Rules
+
+Find the Masquerading rule (LAN → WAN).
+
+Set Outgoing Interface to the new WAN interface.
+
+Save.
+
+6️⃣ Firewall Rule Check
+Rules & Policies → Firewall Rules
+
+Make sure there’s an Allow rule:
+
+yaml
+Copy
+Edit
+Source Zone: LAN
+Destination Zone: WAN
+Action: Allow
+If not, create one.
+
+7️⃣ Test from Sophos
+Diagnostics → Tools
+
+Ping 8.8.8.8 from WAN → should succeed.
+
+Ping google.com → DNS should work.
+
+8️⃣ Test from Client
+Connect a laptop to the LAN switch.
+
+Ensure it gets:
+
+vbnet
+Copy
+Edit
+IP: 192.168.0.x
+Gateway: 192.168.0.1
+DNS: as configured
+Ping 192.168.0.1 → should work.
+
+Ping 8.8.8.8 → should work.
+
+Open browser → internet should work.
+
+💡 Key Notes:
+
+Your 192.168.0.x range stays the same regardless of ISP.
+
+Only WAN side changes for new ISP.
+
+Don’t delete your old firewall rules — just point NAT & gateway to the new WAN.
+
 All devices should still get IPs in that range from Sophos.
